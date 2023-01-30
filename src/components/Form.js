@@ -1,35 +1,26 @@
 import React, { useState } from "react";
 import Button from "./Button";
-
 const Form = (props) => {
   const [enteredInput, setEnteredInput] = useState("");
-  let isValid = true;
 
   const wrongInput = "Only numbers and arithmetic operators are valid!";
   const emptyInput = "You did not enter anything!";
-  let isEmpty = enteredInput.length > 0;
-  const keyPressHandler = (e) => {
-    isValid = e.charCode >= 42 && e.charCode <= 57;
-  };
 
-  const onChangeHandler = (e) => {
-    if (!isValid) {
-      props.message(wrongInput);
-      return;
-    }
+  const onChangeHandler = (event) => {
+    setEnteredInput(event.target.value);
 
-    setEnteredInput(e.target.value);
     props.message("");
   };
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
-    if (!isEmpty) {
+  const onSubmitHandler = (event) => {
+    event.preventDefault();
+    if (!enteredInput) {
       props.message(emptyInput);
       return;
+    } else if (enteredInput.match(/[^0-9*\-+,./]+/g)) {
+      props.message(wrongInput);
     }
-
-    props.onCalculate(enteredInput);
+    props.onClaculate(enteredInput);
 
     setEnteredInput("");
   };
@@ -43,10 +34,8 @@ const Form = (props) => {
     <div>
       <form className="form" onSubmit={onSubmitHandler}>
         <input
-          pattern="^\d*(\.\d{0,2})?$"
           className="form-input clear"
           onChange={onChangeHandler}
-          onKeyPress={keyPressHandler}
           type="text"
           value={props.result ? props.result : enteredInput}
           placeholder="Enter the operand and operator: 2,6,5,5,4,*,-,+"

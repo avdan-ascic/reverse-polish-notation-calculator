@@ -26,7 +26,7 @@ function App() {
         let y = stack.pop().toFixed(2);
         console.log(x, y);
 
-        if (y === undefined) {
+        if (y === undefined ) {
           setErrorMessage(numberOfOperators);
           return;
         } else {
@@ -48,6 +48,11 @@ function App() {
         console.log(stack);
       }
     }
+
+    // if (stack.length > 5) {
+    //   return setErrorMessage("Something went wrong");
+    // }
+
     if (stack.length > 1) {
       return setErrorMessage(numberOfOperands);
     }
@@ -68,7 +73,7 @@ function App() {
       <Header />
       <div className="section-form">
         <Form
-          onCalculate={calculateHandler}
+          onClaculate={calculateHandler}
           message={onErrorMessage}
           result={result}
           onClearResult={ClearResultHandler}
