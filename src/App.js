@@ -8,60 +8,76 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [result, setResult] = useState("");
 
-  const numberOfOperators =
-    "Something went wrong! check the number of OPERATORS!";
-  const numberOfOperands =
-    "Something went wrong! check the number of OPERANDS!";
-
-  const calculateHandler = (enteredNum) => {
-    let stack = [];
-    let enteredValue = enteredNum.split(",");
-    console.log(enteredValue);
-    for (let i = 0; i < enteredValue.length; i++) {
-      if (!isNaN(enteredValue[i]) && isFinite(enteredValue[i])) {
-        console.log(typeof enteredValue[i]);
-        stack.push(+enteredValue[i]);
-      } else {
-        let x = stack.pop().toFixed(2);
-        let y = stack.pop().toFixed(2);
-        console.log(x, y);
-
-        if (y === undefined ) {
-          setErrorMessage(numberOfOperators);
-          return;
+  const calculateHandler = (inputValue) => {
+    if (!inputValue) {
+      setErrorMessage("You did not enter anything!");
+    } else if (result) {
+      setErrorMessage("Only numbers and aritmetic operators are valid");
+    } else {
+      let validInput = true;
+      let inputArr = inputValue.split(",");
+      let numberOfOperands = 0;
+      let numberOfOperators = 0;
+      for (let i = 0; i < inputArr.length; i++) {
+        let element = inputArr[i];
+        if (!isNaN(element)) {
+          numberOfOperands++;
+        } else if (
+          element === "+" ||
+          element === "-" ||
+          element === "*" ||
+          element === "/"
+        ) {
+          numberOfOperators++;
         } else {
-          let z = "";
-          if (enteredValue[i] === "+") {
-            z = +x * 100 + +y * 100;
-            stack.push(z / 100);
-          } else if (enteredValue[i] === "-") {
-            z = +x * 100 - +y * 100;
-            stack.push(z / 100);
-          } else if (enteredValue[i] === "*") {
-            z = (+x * 100 * (+y * 100)) / 10000;
-            stack.push(z);
-          } else if (enteredValue[i] === "/") {
-            z = (+x * 100) / (+y * 100);
-            stack.push(z);
-          }
+          validInput = false;
+          break;
         }
-        console.log(stack);
+      }
+
+      if (validInput) {
+        if (numberOfOperands - 1 !== numberOfOperators) {
+          if (numberOfOperands > numberOfOperators + 1) {
+            setErrorMessage("Something went wrong! Check number of OPERANDS");
+          } else {
+            setErrorMessage("Something went wrong! Check number of OPERATORS");
+          }
+        } else {
+          setErrorMessage("");
+          let stack = [];
+          for (let i = 0; i < inputArr.length; i++) {
+            let element = inputArr[i];
+            if (!isNaN(element)) {
+              stack.push(parseFloat(element));
+            } else {
+              let a = stack.pop();
+              let b = stack.pop();
+              let result = 0;
+              switch (element) {
+                case "+":
+                  result = a + b;
+                  break;
+                case "-":
+                  result = a - b;
+                  break;
+                case "*":
+                  result = a * b;
+                  break;
+                case "/":
+                  result = a / b;
+                  break;
+                default:
+                  break;
+              }
+              stack.push(result);
+            }
+          }
+          setResult(`${inputValue} = ${stack[0].toFixed(2)}`);
+        }
+      } else {
+        setErrorMessage("Only numbers and arithmetic operators are valid");
       }
     }
-
-    // if (stack.length > 5) {
-    //   return setErrorMessage("Something went wrong");
-    // }
-
-    if (stack.length > 1) {
-      return setErrorMessage(numberOfOperands);
-    }
-    let calculateResult = stack.pop();
-    return setResult(`${enteredNum} = ${calculateResult}`);
-  };
-
-  const onErrorMessage = (message) => {
-    setErrorMessage(message);
   };
 
   const ClearResultHandler = () => {
@@ -74,7 +90,6 @@ function App() {
       <div className="section-form">
         <Form
           onClaculate={calculateHandler}
-          message={onErrorMessage}
           result={result}
           onClearResult={ClearResultHandler}
         />
